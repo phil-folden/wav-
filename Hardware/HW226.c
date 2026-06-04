@@ -2,6 +2,7 @@
 #include "SPI_hardware.h"
 #include "Serial.h"
 #include "Wav.h"
+#include "OLED.h"
 
 #include <stdint.h>
 
@@ -15,12 +16,6 @@
 // +28 ~ +31   文件大小
 //起始簇高和起始簇低拼起来得到信息的起始簇号，然后可以知道文件的数据的扇区，在这里一个簇是16个扇区
 
-void Delay_ms(uint16_t ms)
-{
-    uint16_t i, j;
-    for(i = 0; i < ms; i++)
-        for(j = 0; j < 7200; j++);
-}
 
 //发送Dummy Clock，SD卡需要至少74个时钟周期来完成上电初始化
 void SD_SendDummyClock(void){
@@ -63,7 +58,7 @@ uint8_t SD_WaitReady(void){
         if(response == 0xFF){  // 如果响应是0xFF，说明SD卡准备好了
             return 1;
         }
-        Delay_ms(1);  // 等待1ms后再次检查
+        // Delay_ms(1);  // 等待1ms后再次检查
     }
     return 0;  // 超时未准备好
 }

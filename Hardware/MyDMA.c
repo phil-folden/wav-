@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "MyDMA.h"
 #include "Audio_Timer.h"
+#include "Audio_PWM.h"
 #include "Wav.h"
 
 
@@ -14,7 +15,7 @@ void MyDMA_Init(void){
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
     DMA_InitTypeDef DMA_InitStructure;
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(TIM2->CCR1);
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&(TIM1->DMAR);
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)dma_buffer;
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
     DMA_InitStructure.DMA_BufferSize = Audio_buf_size;
@@ -25,13 +26,13 @@ void MyDMA_Init(void){
     DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
     DMA_InitStructure.DMA_Priority = DMA_Priority_High;
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
-    DMA_Init(DMA1_Channel3, &DMA_InitStructure);
-    DMA_Cmd(DMA1_Channel3, ENABLE);
+    DMA_Init(DMA1_Channel5, &DMA_InitStructure);
+    DMA_Cmd(DMA1_Channel5, ENABLE);
 
-    DMA_ITConfig(DMA1_Channel3, DMA_IT_HT | DMA_IT_TC | DMA_IT_TE, ENABLE);
+    DMA_ITConfig(DMA1_Channel5, DMA_IT_HT | DMA_IT_TC | DMA_IT_TE, ENABLE);
 
     NVIC_InitTypeDef NVIC_InitStructure;
-    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -45,9 +46,9 @@ void MyDMA_Init1(uint8_t entry_index){
     WAV_Sample(entry_index, dma_buffer + Audio_buf_half_size);
 }
 
-void DMA1_Channel3_IRQHandler(void){
-    if(DMA_GetITStatus(DMA1_IT_HT3) != RESET){
-        DMA_ClearITPendingBit(DMA1_IT_HT3);
+void DMA1_Channel5_IRQHandler(void){
+    if(DMA_GetITStatus(DMA1_IT_HT5) != RESET){
+        DMA_ClearITPendingBit(DMA1_IT_HT5);
         if(audio_full_request == 1){
             underrun = 1;
         }
@@ -56,8 +57,8 @@ void DMA1_Channel3_IRQHandler(void){
         audio_half_request = 1;
     }
 
-    if(DMA_GetITStatus(DMA1_IT_TC3) != RESET){
-        DMA_ClearITPendingBit(DMA1_IT_TC3);
+    if(DMA_GetITStatus(DMA1_IT_TC5) != RESET){
+        DMA_ClearITPendingBit(DMA1_IT_TC5);
         if(audio_half_request == 1){
             underrun = 1;
         }

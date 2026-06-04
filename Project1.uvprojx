@@ -746,14 +746,14 @@
               <FilePath>.\Hardware\Wav.h</FilePath>
             </File>
             <File>
-              <FileName>Audio_PWM.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Hardware\Audio_PWM.h</FilePath>
-            </File>
-            <File>
               <FileName>Audio_PWM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Hardware\Audio_PWM.c</FilePath>
+            </File>
+            <File>
+              <FileName>Audio_PWM.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\Audio_PWM.h</FilePath>
             </File>
             <File>
               <FileName>Audio_Timer.c</FileName>
@@ -785,6 +785,16 @@
               <FileType>5</FileType>
               <FilePath>.\Hardware\Key.h</FilePath>
             </File>
+            <File>
+              <FileName>Rotate.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\Rotate.c</FilePath>
+            </File>
+            <File>
+              <FileName>Rotate.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Hardware\Rotate.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -799,6 +809,16 @@
               <FileName>Aduio_Player.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\App\Aduio_Player.h</FilePath>
+            </File>
+            <File>
+              <FileName>Scene_Manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\App\Scene_Manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>Scene_Manager.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\App\Scene_Manager.h</FilePath>
             </File>
           </Files>
         </Group>

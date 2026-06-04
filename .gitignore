@@ -1,0 +1,27 @@
+# Keil build output
+Objects/
+Listings/
+
+*.o
+*.d
+*.crf
+*.axf
+*.hex
+*.bin
+*.map
+*.lst
+*.lnp
+*.dep
+*.htm
+*.build_log.htm
+
+# VSCode / log files
+.vscode/*.log
+.vscode/*.lock
+
+# Keil personal UI config
+*.uvguix.*
+*.uvgui.*
+
+# VSCode workspace personal file
+*.code-workspace

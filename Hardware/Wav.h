@@ -10,6 +10,7 @@
 
 extern uint8_t buf1[512];
 extern uint8_t buf2[buf2_maxread];
+extern uint8_t sd_count;
 
 typedef struct {
     uint8_t name[9];       // 文件名
@@ -41,17 +42,12 @@ void FAT32_SeekAll(SD_Data *data);
 
 void Init_WAV_Head(WAV_Info *wav_info);
 
-void WAV_Test(void);
-
 void Init_WAV(void);
 
-void Play_WAV(uint8_t entry_index);
+uint32_t WAV_Sample(uint8_t entry_index, uint8_t* data);
 
-void WAV_Sample(uint8_t entry_index, uint8_t* data);
-
-void Start_FAT(uint8_t entry_index);
+void Start_FAT(uint8_t entry_index, uint32_t offset);
 
 void End_FAT(void);
-
 
 #endif

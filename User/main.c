@@ -8,50 +8,44 @@
 #include <Audio_Timer.h>
 #include "Key.h"
 #include "Aduio_Player.h"
+#include "OLED.h"
+#include "Scene_Manager.h"
 
 volatile uint8_t sine_index = 0;
 extern uint8_t dma_buffer[Audio_buf_size];
 
+volatile uint32_t sys_ms = 0;
+
+void SysTick_Handler(void){
+    sys_ms++;
+}
 
 int main(void)
 {
-    Serial_Init();
-
     Key_Init();
-
+    SysTick_Config(SystemCoreClock / 1000);  // 配置SysTick定时器，每1ms触发一次中断
+    Serial_Init();
+    OLED_Init();
     Init_WAV();
+    Audio_Init();
+    Key_Event key_event1 = KEY_EVENT_NONE;
+    while(1){
+        Scene_Manager_Flash();
+        Key_Scanned();
+        key_event1 = Key_GetEvent();
 
-    Init_Audio_PWM();
-    MyDMA_Init();
-    Init_Audio_Timer();;
-
-    Audio_Start(0);
-
-    uint8_t i = 0;
-    while (key_count != 1)
-    {
-        if(underrun == 1){
-            underrun = 0;
-            Serial_SendString("underrun");
-            Serial_SendByte(i);
-            i++;
-        }
-        if(i == 0){
-            Serial_SendString("underrun");
-            i++;
-        }
-        if(audio_half_request == 1){
-            audio_half_request = 0;
-            WAV_Sample(0, dma_buffer);
+        if(restart == 1){
+            restart = 0;
+            scene_offset = Audio_Play(song_index, scene_offset);
         }
 
-        if(audio_full_request == 1){
-            audio_full_request = 0;
-            WAV_Sample(0, dma_buffer + Audio_buf_half_size);
+        if(key_event1 == KEY_EVENT_PRESSED){
+            if(sceneid == Scene_sonelist){
+                Scene_Manager_Handle((Audio_State)0);
+            }
+            else if(sceneid == Scene_soneplaying){
+                Scene_Manager_Handle((Audio_State)list_index);
+            }
         }
     }
-    Serial_SendByte(TIM2->CCR1);
-    Audio_Stop();
-    Serial_SendByte(TIM2->CCR1);
 }
-

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define Audio_buf_size 4096
+#define Audio_buf_size 8192
 #define Audio_buf_half_size (Audio_buf_size / 2)
 
 extern volatile uint8_t audio_half_request;

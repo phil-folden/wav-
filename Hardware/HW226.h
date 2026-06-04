@@ -19,8 +19,6 @@ uint8_t SD_ReadSector(uint32_t block, uint8_t *buf);
 
 void SD_Test(uint32_t block);
 
-void Delay_ms(uint16_t ms);
-
 uint16_t Read_Big_Endian16(uint8_t *buf, uint16_t offset);
 
 uint32_t Read_Big_Endian32(uint8_t *buf, uint16_t offset);
