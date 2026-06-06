@@ -31,3 +31,4 @@
 .\objects\hw226.o: Hardware\SPI_hardware.h
 .\objects\hw226.o: Hardware\Serial.h
 .\objects\hw226.o: Hardware\Wav.h
+.\objects\hw226.o: Hardware\OLED.h

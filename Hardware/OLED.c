@@ -124,6 +124,34 @@ void OLED_Clear(void)
 	}
 }
 
+void OLED_ClearLine(uint8_t line)
+{
+    uint8_t i;
+
+    if(line >= 8)
+    {
+        return;
+    }
+
+    OLED_SetCursor(line, 0);
+
+    for(i = 0; i < 128; i++)
+    {
+        OLED_WriteData(0x00);
+    }
+}
+
+void OLED_ClearTextLine(uint8_t line)
+{
+    if(line < 1 || line > 4)
+    {
+        return;
+    }
+
+    OLED_ClearLine((line - 1) * 2);
+    OLED_ClearLine((line - 1) * 2 + 1);
+}
+
 /**
   * @brief  OLED显示一个字符
   * @param  Line 行位置，范围：1~4

@@ -30,4 +30,5 @@
 .\objects\mydma.o: .\Library\misc.h
 .\objects\mydma.o: Hardware\MyDMA.h
 .\objects\mydma.o: Hardware\Audio_Timer.h
+.\objects\mydma.o: Hardware\Audio_PWM.h
 .\objects\mydma.o: Hardware\Wav.h

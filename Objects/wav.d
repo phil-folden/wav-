@@ -35,5 +35,6 @@
 .\objects\wav.o: Hardware\HW226.h
 .\objects\wav.o: Hardware\Wav.h
 .\objects\wav.o: Hardware\MyDMA.h
+.\objects\wav.o: Hardware\Audio_PWM.h
 .\objects\wav.o: .\FatFs\ff.h
 .\objects\wav.o: .\FatFs\ffconf.h

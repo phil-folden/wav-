@@ -1,4 +1,5 @@
-# Keil build output
+git add .gitignore
+git add App Hardware User Project1.uvprojx Project1.uvoptx# Keil build output
 Objects/
 Listings/
 

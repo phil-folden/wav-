@@ -8,13 +8,11 @@
 #include "Serial.h"
 
 uint8_t need_flash = 0;
-uint8_t is_playing = 0;
 int8_t rotate_count = 0;
-uint8_t restart = 0;
-uint8_t list_index = 0;
+uint8_t play_menu_index = 0;
 uint8_t song_index = 0;
-uint32_t scene_offset = 0;
 SceneId sceneid = Scene_soneplaying;
+static uint8_t song_step = 0, menu_step = 0;
 
 char list_name[5][17]={
     "last",
@@ -24,94 +22,84 @@ char list_name[5][17]={
     "stop"
 };
 
-static void sonelist_Handle(Audio_State state){
+static void sonelist_Handle(Play_Menu_State state){
     switch(state){
-        case Audio_playing_or_before:
+        case Play_Menu_before:
             sceneid = Scene_soneplaying;
             need_flash = 1;
-            is_playing = 1;
-            scene_offset = Audio_Play(song_index, 0);
+            Audio_Play(song_index, 0);
+            Audio_Reseek();
             break;
-        case Audio_stopped:
+        case Play_Menu_stopped:
 
             break;
 
-        case Audio_paused:
+        case Play_Menu_paused:
             break;
 
-        case Audio_error:
+        case Play_Menu_error:
             break;
     }
 }
 
-static void soneplaying_Handle(Audio_State state){
+static void soneplaying_Handle(Play_Menu_State state){
+    uint32_t offset;
+    uint8_t is_playing;
     switch(state){
-        case Audio_playing_or_before:
+        case Play_Menu_before:
             if(song_index == 0){
                 song_index = sd_count - 1;
             }
             else{
                 song_index -= 1;
             }
-            is_end = 1;
-            Audio_Stop();
-            scene_offset = 0;
-            restart = 1;
-            is_playing = 1;
+            Audio_Play(song_index, 0);
+            Audio_Reseek();
             need_flash = 1;
             break;
 
-        case Audio_return:
+        case Play_Menu_return:
             sceneid = Scene_sonelist;
-            scene_offset = 0;
             Audio_Stop();
-            is_playing = 0;
-            is_end = 1;
             need_flash = 1;
             break;
 
-        case Audio_next:
+        case Play_Menu_next:
             if(song_index == sd_count - 1){
                 song_index = 0;
             }
             else{
                 song_index += 1;
             }
-            is_end = 1;
-            Audio_Stop();
-            scene_offset = 0;
-            restart = 1;
-            is_playing = 1;
+            Audio_Play(song_index, 0);
+            Audio_Reseek();
             need_flash = 1;
             break;
 
-        case Audio_paused:
+        case Play_Menu_paused:
+            is_playing = Audio_get_state();
+            offset = Audio_get_offset();
             if(is_playing == 1){
                 //正在播放，点击就是停止播放
                 need_flash = 1;
-                is_playing = 0;
-                is_end = 1;
                 Audio_Stop();
             }
             else if(is_playing == 0){
                 //没有播放,点击就是继续播放
+                Audio_restart();
+                Audio_Play(song_index, offset);
+                Audio_Reseek();
                 need_flash = 1;
-                is_playing = 1;
-                is_end = 1;
-                restart = 1;
             }
             break;
 
-        case Audio_stopped:
-                is_end = 1;
+        case Play_Menu_stopped:
                 Audio_Stop();
-                scene_offset = 0;
-                is_playing = 0;
                 need_flash = 1;
                 break;
             
-        case Audio_error:
-            is_end = 0;
+        case Play_Menu_error:
+            Audio_Stop();
             Serial_SendString("Audio error\r\n");
             break;
     }
@@ -121,12 +109,11 @@ void Scene_Manager_Init(void){
     Rotate_Init();
     sceneid = Scene_sonelist;
     song_index = 0;
-    list_index = 0;
+    play_menu_index = 0;
     need_flash = 1;
-    is_playing = 1;
 }
 
-void Scene_Manager_Handle(Audio_State state){
+void Scene_Manager_Handle(Play_Menu_State state){
     switch(sceneid){
         case Scene_sonelist:
             sonelist_Handle(state);
@@ -137,7 +124,96 @@ void Scene_Manager_Handle(Audio_State state){
     }
 }
 
+static void UI_Sonelist(void){
+    uint8_t j[4];
+    for(int i = 0; i < 4 && i < sd_count; i++){
+        uint8_t temp = song_index + i;
+        if(temp >= sd_count){
+            temp = temp - sd_count;
+        }
+        j[i] = temp;
+    }
+
+    switch(song_step){
+        case(0):
+        OLED_ClearTextLine(1);
+        OLED_ShowString(1, 1, "->");
+        OLED_ShowString(1, 3, (char*)sd_data[j[0]].name);
+        need_flash = 1;
+        song_step++;
+        break;
+            
+        case(1):
+        OLED_ClearTextLine(2);
+        OLED_ShowString(2, 3, (char*)sd_data[j[1]].name);
+        need_flash = 1;
+        song_step++;
+        break;
+
+        case(2):
+        OLED_ClearTextLine(3);
+        OLED_ShowString(3, 3, (char*)sd_data[j[2]].name);
+        need_flash = 1;
+        song_step++;
+        break;
+
+        case(3):
+        OLED_ClearTextLine(4);
+        OLED_ShowString(4, 3, (char*)sd_data[j[3]].name);
+        need_flash = 0;
+        song_step = 0;
+        break;
+    }
+}
+
+static void UI_Menulist(void){
+    uint8_t j[4];
+    for(int i = 0; i < 4 && i < Play_Menu_Count; i++){
+        uint8_t temp = play_menu_index + i;
+        if(temp >= Play_Menu_Count){
+            temp = temp - Play_Menu_Count;
+        }
+        j[i] = temp;
+    }
+
+    switch(menu_step){
+        case(0):
+        OLED_ClearTextLine(1);
+        OLED_ShowString(1, 1, "->");
+        OLED_ShowString(1, 3, list_name[j[0]]);
+        OLED_ClearTextLine(2);
+        OLED_ShowString(2, 3, list_name[j[1]]);
+        menu_step++;
+        need_flash = 1;
+        break;
+            
+        case(1):
+        OLED_ClearTextLine(3);
+        OLED_ShowString(3, 3, list_name[j[2]]);
+        OLED_ClearTextLine(4);
+        OLED_ShowString(4, 3, list_name[j[3]]);
+        menu_step = 0;
+        need_flash = 0;
+        break;
+
+    //     case(2):
+    //     OLED_ClearTextLine(3);
+    //     OLED_ShowString(3, 3, list_name[j[2]]);
+    //     need_flash = 1;
+    //     menu_step++;
+    //     break;
+
+    //     case(3):
+    //     OLED_ClearTextLine(4);
+    //     OLED_ShowString(4, 3, list_name[j[3]]);
+    //     need_flash = 0;
+    //     menu_step = 0;
+    //     break;
+    }
+}
+
 static void OLED_show_Songlist(void){
+    uint8_t can_flash = Audio_get_flash();
     if(sd_count == 0){
         return;
     }
@@ -150,55 +226,32 @@ static void OLED_show_Songlist(void){
         song_index = (song_index + rotate_count) % sd_count;
     }
 
-    OLED_Clear();
-    for(int i = 0; i < 4 && i < sd_count; i++){
-        uint8_t j = song_index + i;
-        if(j >= sd_count){
-            j = j - sd_count;
-        }
-
-        if(i == 0){
-            OLED_ShowString(1, 1, "->");
-            OLED_ShowString(i + 1, 3, (char*)sd_data[j].name);
-        }
-        else{
-            OLED_ShowString(i + 1, 1, (char*)sd_data[j].name);
-        }
+    if(can_flash == 1){
+        UI_Sonelist();
     }
 }
 
 static void OLED_show_Soneplaying(void){
-    OLED_Clear();
-    rotate_count = rotate_count % 5;
+    uint8_t can_flash = Audio_get_flash();
+    rotate_count = rotate_count % Play_Menu_Count;
     if(rotate_count < 0){
-        list_index = (list_index + 5 + rotate_count) % 5;
+        play_menu_index = (play_menu_index + Play_Menu_Count + rotate_count) % Play_Menu_Count;
     }
     else if(rotate_count > 0){
-        list_index = list_index + rotate_count;
-        list_index = list_index % 5;
+        play_menu_index = play_menu_index + rotate_count;
+        play_menu_index = play_menu_index % Play_Menu_Count;
     }
 
-    if(is_playing == 0){
-        //??????
-        sprintf(list_name[3], "%s", "play");
-    }
-    else if(is_playing == 1){
-        //??????
-        sprintf(list_name[3], "%s", "pause");
-    }
+    uint8_t is_playing = Audio_get_state();
+        if(is_playing == 0){
+            sprintf(list_name[3], "%s", "play");
+        }
+        else if(is_playing == 1){
+            sprintf(list_name[3], "%s", "pause");
+        }
 
-    for(int i = 0; i < 4; i++){
-        uint8_t j = list_index + i;
-        if(j >= 5){
-            j = j - 5;
-        }
-        if(i == 0){
-            OLED_ShowString(1, 1, "->");
-            OLED_ShowString(i + 1, 3, list_name[j]);
-        }
-        else{
-            OLED_ShowString(i + 1, 1, list_name[j]);
-        }
+    if(can_flash == 1){
+        UI_Menulist();
     }
 }
 
@@ -213,7 +266,5 @@ void Scene_Manager_Flash(void){
             OLED_show_Soneplaying();
             break;
         }
-        need_flash = 0;
     }
 }
-

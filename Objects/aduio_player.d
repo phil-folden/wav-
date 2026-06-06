@@ -32,3 +32,6 @@
 .\objects\aduio_player.o: .\Hardware\Audio_PWM.h
 .\objects\aduio_player.o: .\Hardware\Wav.h
 .\objects\aduio_player.o: App\Aduio_Player.h
+.\objects\aduio_player.o: .\Hardware\Key.h
+.\objects\aduio_player.o: App\Scene_Manager.h
+.\objects\aduio_player.o: .\Hardware\Serial.h

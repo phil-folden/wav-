@@ -37,3 +37,5 @@
 .\objects\main.o: .\Hardware\Audio_Timer.h
 .\objects\main.o: .\Hardware\Key.h
 .\objects\main.o: .\App\Aduio_Player.h
+.\objects\main.o: .\Hardware\OLED.h
+.\objects\main.o: .\App\Scene_Manager.h

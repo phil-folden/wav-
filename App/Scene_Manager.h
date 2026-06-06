@@ -3,11 +3,11 @@
 
 #include <stdint.h>
 
+#define Play_Menu_Count 5
+
 extern uint8_t need_flash;
-extern uint8_t list_index;
+extern uint8_t play_menu_index;
 extern uint8_t song_index;
-extern uint8_t restart;
-extern uint32_t scene_offset;
 
 typedef enum{
     Scene_sonelist = 0,
@@ -15,19 +15,19 @@ typedef enum{
 } SceneId;
 
 typedef enum{
-    Audio_playing_or_before = 0,
-    Audio_return,
-    Audio_next,
-    Audio_paused,
-    Audio_stopped,
-    Audio_error
-} Audio_State;
+    Play_Menu_before = 0,
+    Play_Menu_return,
+    Play_Menu_next,
+    Play_Menu_paused,
+    Play_Menu_stopped,
+    Play_Menu_error
+} Play_Menu_State;
 
 extern SceneId sceneid;
-extern Audio_State state;
+extern Play_Menu_State state;
 
 void Scene_Manager_Init(void);
-void Scene_Manager_Handle(Audio_State state);
+void Scene_Manager_Handle(Play_Menu_State state);
 void Scene_Manager_Flash(void);
 
 

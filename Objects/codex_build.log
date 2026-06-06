@@ -1,7 +1,12 @@
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'D:\keil5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling OLED.c...
+compiling Aduio_Player.c...
+"no source": Error:  #219: error while deleting file ".\objects\aduio_player.d": Permission denied
+App\Aduio_Player.c: 0 warnings, 1 error
+compiling Scene_Manager.c...
+"no source": Error:  #219: error while deleting file ".\objects\scene_manager.d": Permission denied
+App\Scene_Manager.c: 0 warnings, 1 error
 linking...
-Program Size: Code=11406 RO-data=1798 RW-data=44 ZI-data=12268  
+Program Size: Code=14732 RO-data=1800 RW-data=196 ZI-data=16364  
 ".\Objects\Project1.axf" - 0 Error(s), 0 Warning(s).
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00

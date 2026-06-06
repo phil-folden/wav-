@@ -30,21 +30,16 @@ int main(void)
     Audio_Init();
     Key_Event key_event1 = KEY_EVENT_NONE;
     while(1){
-        Scene_Manager_Flash();
+        Audio_Play1();
         Key_Scanned();
         key_event1 = Key_GetEvent();
-
-        if(restart == 1){
-            restart = 0;
-            scene_offset = Audio_Play(song_index, scene_offset);
-        }
-
+        Scene_Manager_Flash();
         if(key_event1 == KEY_EVENT_PRESSED){
             if(sceneid == Scene_sonelist){
-                Scene_Manager_Handle((Audio_State)0);
+                Scene_Manager_Handle((Play_Menu_State)0);
             }
             else if(sceneid == Scene_soneplaying){
-                Scene_Manager_Handle((Audio_State)list_index);
+                Scene_Manager_Handle((Play_Menu_State)play_menu_index);
             }
         }
     }
